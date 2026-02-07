@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Allen Ops Dashboard - Public View</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #f8fafc;
+      padding: 20px;
+    }
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    .header {
+      background: #1e293b;
+      color: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+    .header h1 {
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .header p {
+      color: #94a3b8;
+      font-size: 14px;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+    .stat-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .stat-label {
+      font-size: 12px;
+      color: #64748b;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    .stat-value {
+      font-size: 28px;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 5px;
+    }
+    .filters {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .filter-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    .filter-group label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      color: #64748b;
+      margin-bottom: 5px;
+      text-transform: uppercase;
+    }
+    .filter-select, .filter-input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+    .table-container {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th {
+      background: #f8fafc;
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      color: #64748b;
+      border-bottom: 2px solid #e2e8f0;
+      cursor: pointer;
+    }
+    th:hover {
+      background: #f1f5f9;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+      font-size: 13px;
+    }
+    tr:hover {
+      background: #f8fafc;
+    }
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+    .badge-jee { background: #dbeafe; color: #1e40af; }
+    .badge-neet { background: #dcfce7; color: #166534; }
+    .status-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .status-active { background: #ccfbf1; color: #0f766e; }
+    .status-today { background: #dcfce7; color: #166534; }
+    .btn {
+      padding: 10px 20px;
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .btn:hover {
+      background: #1d4ed8;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🎓 Allen Ops Dashboard</h1>
+      <p>Public View - Course Details 2025-26</p>
+    </div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="stat-label">Total Courses</div>
+        <div class="stat-value" id="stat-courses">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Regular Batches</div>
+        <div class="stat-value" id="stat-batches">0</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Strength</div>
+        <div class="stat-value" id="stat-strength">0</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Stream</label>
+          <select class="filter-select" id="filter-stream">
+            <option value="">All Streams</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Class</label>
+          <select class="filter-select" id="filter-class">
+            <option value="">All Classes</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Language</label>
+          <select class="filter-select" id="filter-language">
+            <option value="">All Languages</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label>Search</label>
+          <input type="text" class="filter-input" id="search" placeholder="Search...">
+        </div>
+      </div>
+      <button class="btn" onclick="resetFilters()">Reset Filters</button>
+    </div>
+
+    <div class="table-container">
+      <table id="data-table">
+        <thead>
+          <tr>
+            <th onclick="sortTable('date')">Date</th>
+            <th onclick="sortTable('stream')">Stream</th>
+            <th onclick="sortTable('classVal')">Class</th>
+            <th onclick="sortTable('courseName')">Course</th>
+            <th onclick="sortTable('batch')">Batch</th>
+            <th onclick="sortTable('strength')">Strength</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="7" style="text-align:center; padding:40px;">Loading data...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    let allData = [];
+    let filteredData = [];
+
+    // Load data from JSON file
+    fetch('data.json')
+      .then(response => response.json())
+      .then(data => {
+        allData = data;
+        initializeFilters();
+        applyFilters();
+      })
+      .catch(error => {
+        document.getElementById('table-body').innerHTML = 
+          '<tr><td colspan="7" style="text-align:center;color:red;padding:40px;">Error loading data: ' + error + '</td></tr>';
+      });
+
+    function initializeFilters() {
+      const streams = [...new Set(allData.map(d => d.stream))].sort();
+      const classes = [...new Set(allData.map(d => d.classVal))].sort();
+      const languages = [...new Set(allData.map(d => d.language))].sort();
+
+      populateSelect('filter-stream', streams);
+      populateSelect('filter-class', classes);
+      populateSelect('filter-language', languages);
+
+      document.getElementById('filter-stream').addEventListener('change', applyFilters);
+      document.getElementById('filter-class').addEventListener('change', applyFilters);
+      document.getElementById('filter-language').addEventListener('change', applyFilters);
+      document.getElementById('search').addEventListener('input', applyFilters);
+    }
+
+    function populateSelect(id, options) {
+      const select = document.getElementById(id);
+      options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        select.appendChild(option);
+      });
+    }
+
+    function applyFilters() {
+      const streamFilter = document.getElementById('filter-stream').value;
+      const classFilter = document.getElementById('filter-class').value;
+      const langFilter = document.getElementById('filter-language').value;
+      const searchText = document.getElementById('search').value.toLowerCase();
+
+      filteredData = allData.filter(item => {
+        if (streamFilter && item.stream !== streamFilter) return false;
+        if (classFilter && item.classVal !== classFilter) return false;
+        if (langFilter && item.language !== langFilter) return false;
+        if (searchText) {
+          const searchStr = (item.courseName + item.batch + item.batchId).toLowerCase();
+          if (!searchStr.includes(searchText)) return false;
+        }
+        return true;
+      });
+
+      updateStats();
+      renderTable();
+    }
+
+    function updateStats() {
+      const courses = new Set(filteredData.map(d => d.courseName)).size;
+      const batches = filteredData.filter(d => d.batchType === 'Regular').length;
+      const strength = filteredData.reduce((sum, d) => sum + parseInt(d.strength || 0), 0);
+
+      document.getElementById('stat-courses').textContent = courses;
+      document.getElementById('stat-batches').textContent = batches;
+      document.getElementById('stat-strength').textContent = strength.toLocaleString();
+    }
+
+    function renderTable() {
+      const tbody = document.getElementById('table-body');
+      
+      if (filteredData.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">No data found</td></tr>';
+        return;
+      }
+
+      tbody.innerHTML = filteredData.map(row => {
+        const badgeClass = row.stream.toLowerCase().includes('jee') ? 'badge-jee' : 'badge-neet';
+        const statusBadge = isToday(row.date) ? 
+          '<span class="status-badge status-today">Today</span>' : 
+          '<span class="status-badge status-active">Active</span>';
+
+        return `
+          <tr>
+            <td><strong>${row.date}</strong></td>
+            <td><span class="badge ${badgeClass}">${row.stream}</span></td>
+            <td>${row.classVal}</td>
+            <td><strong>${row.courseName}</strong></td>
+            <td>${row.batch}</td>
+            <td><strong style="color:#2563eb;">${row.strength}</strong></td>
+            <td>${statusBadge}</td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    function isToday(dateStr) {
+      if (!dateStr) return false;
+      const parts = dateStr.split('-');
+      const date = new Date(parts[2], parts[1] - 1, parts[0]);
+      const today = new Date();
+      return date.toDateString() === today.toDateString();
+    }
+
+    function sortTable(key) {
+      filteredData.sort((a, b) => {
+        if (key === 'strength') {
+          return parseInt(b[key] || 0) - parseInt(a[key] || 0);
+        }
+        return String(a[key]).localeCompare(String(b[key]));
+      });
+      renderTable();
+    }
+
+    function resetFilters() {
+      document.getElementById('filter-stream').value = '';
+      document.getElementById('filter-class').value = '';
+      document.getElementById('filter-language').value = '';
+      document.getElementById('search').value = '';
+      applyFilters();
+    }
+  </script>
+</body>
+</html>
