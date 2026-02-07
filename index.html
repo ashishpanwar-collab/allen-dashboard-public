@@ -35,7 +35,6 @@
       overflow: hidden;
     }
 
-    /* LAYOUT */
     .sidebar {
       width: var(--sidebar-width);
       background: #1e293b;
@@ -145,7 +144,6 @@
       flex-direction: column;
     }
 
-    /* STATS */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -178,7 +176,6 @@
       margin-top: 4px;
     }
 
-    /* FILTERS */
     .controls-section {
       background: #fff;
       padding: 14px;
@@ -244,7 +241,6 @@
       text-transform: uppercase;
     }
 
-    /* QUICK ACTIONS */
     .quick-actions {
       display: flex;
       gap: 8px;
@@ -271,7 +267,6 @@
       border-color: var(--primary);
     }
 
-    /* COLUMN TOGGLE */
     .column-toggle {
       position: relative;
       margin-left: auto;
@@ -348,7 +343,6 @@
       cursor: pointer;
     }
 
-    /* MULTI-SELECT */
     .ms-container {
       position: relative;
       width: 100%;
@@ -492,7 +486,6 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
-    /* TABLE */
     .table-container {
       background: #fff;
       border-radius: 10px;
@@ -638,7 +631,6 @@
       cursor: pointer;
     }
 
-    /* ID CELLS */
     .id-cell {
       display: flex;
       flex-direction: column;
@@ -664,7 +656,6 @@
       color: var(--primary);
     }
 
-    /* BADGES */
     .status-badge {
       padding: 3px 8px;
       border-radius: 12px;
@@ -743,7 +734,6 @@
       color: #4b5563;
     }
 
-    /* LOADER */
     .loader {
       display: flex;
       justify-content: center;
@@ -812,7 +802,6 @@
       display: none !important;
     }
 
-    /* CONTEXT MENU */
     .context-menu {
       position: fixed;
       background: #fff;
@@ -862,7 +851,6 @@
       }
     }
 
-    /* RESPONSIVE */
     @media (max-width: 1200px) {
       .stats-grid {
         grid-template-columns: repeat(3, 1fr);
@@ -915,7 +903,7 @@
   <div class="main-content">
     <div class="top-bar">
       <div class="page-title">
-        Course Details 2025-26 (Public View - Live Data)
+        Course Details 2025-26 (Public View)
         <div class="column-toggle">
           <button class="icon-btn" id="column-btn" onclick="toggleColumns()" title="Show/Hide Columns">⚙️</button>
           <div id="column-dropdown" class="column-dropdown"></div>
@@ -929,7 +917,6 @@
     </div>
 
     <div class="dashboard-container">
-      <!-- STATS CARDS -->
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-label">Total Courses</div>
@@ -1010,7 +997,7 @@
       <div class="table-container">
         <div id="loader" class="loader">
           <div class="spinner"></div>
-          <span>Loading live data from Google Sheets...</span>
+          <span>Loading data...</span>
         </div>
 
         <div class="table-wrapper hidden" id="table-wrapper">
@@ -1283,10 +1270,8 @@
       document.getElementById('table-wrapper').classList.add('hidden');
       document.getElementById('pagination-bar').classList.add('hidden');
       
-      // LIVE GOOGLE SHEETS API - Auto-updates from sheet
-      const API_URL = 'https://script.google.com/a/macros/allen.in/s/AKfycbzoWpXXaxfF0rbvWj0OJot-ZArJT-ub_G3QCfdV-VlCSw3xiTjkc3gvOdeDnZl-EebRBQ/exec';
-      
-      fetch(API_URL)
+      // Fetch from static data.json file
+      fetch('data.json')
         .then(response => {
           if (!response.ok) throw new Error('Failed to load data');
           return response.json();
@@ -1323,7 +1308,7 @@
       document.getElementById('table-wrapper').classList.remove('hidden');
       document.getElementById('pagination-bar').classList.remove('hidden');
       
-      showToast(`Loaded ${fullData.length} batches from live sheet`, 'success');
+      showToast(`Loaded ${fullData.length} batches`, 'success');
     }
 
     function sortByDate() {
