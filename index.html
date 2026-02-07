@@ -915,7 +915,7 @@
   <div class="main-content">
     <div class="top-bar">
       <div class="page-title">
-        Course Details 2025-26 (Public View)
+        Course Details 2025-26 (Public View - Live Data)
         <div class="column-toggle">
           <button class="icon-btn" id="column-btn" onclick="toggleColumns()" title="Show/Hide Columns">⚙️</button>
           <div id="column-dropdown" class="column-dropdown"></div>
@@ -1010,7 +1010,7 @@
       <div class="table-container">
         <div id="loader" class="loader">
           <div class="spinner"></div>
-          <span>Loading data...</span>
+          <span>Loading live data from Google Sheets...</span>
         </div>
 
         <div class="table-wrapper hidden" id="table-wrapper">
@@ -1283,8 +1283,10 @@
       document.getElementById('table-wrapper').classList.add('hidden');
       document.getElementById('pagination-bar').classList.add('hidden');
       
-      // Fetch data from JSON file
-      fetch('data.json')
+      // LIVE GOOGLE SHEETS API - Auto-updates from sheet
+      const API_URL = 'https://script.google.com/a/macros/allen.in/s/AKfycbzoWpXXaxfF0rbvWj0OJot-ZArJT-ub_G3QCfdV-VlCSw3xiTjkc3gvOdeDnZl-EebRBQ/exec';
+      
+      fetch(API_URL)
         .then(response => {
           if (!response.ok) throw new Error('Failed to load data');
           return response.json();
@@ -1321,7 +1323,7 @@
       document.getElementById('table-wrapper').classList.remove('hidden');
       document.getElementById('pagination-bar').classList.remove('hidden');
       
-      showToast(`Loaded ${fullData.length} batches`, 'success');
+      showToast(`Loaded ${fullData.length} batches from live sheet`, 'success');
     }
 
     function sortByDate() {
