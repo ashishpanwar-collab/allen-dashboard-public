@@ -1,346 +1,1950 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Allen Ops Dashboard - Public View</title>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <base target="_top">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #2563eb;
+      --bg-color: #f8fafc;
+      --sidebar-width: 180px;
+      --text-dark: #0f172a;
+      --text-light: #64748b;
+      --border: #e2e8f0;
+      --status-today-bg: #dcfce7;
+      --status-today-text: #166534;
+      --status-soon-bg: #f3e8ff;
+      --status-soon-text: #7e22ce;
+      --status-sched-bg: #e0f2fe;
+      --status-sched-text: #0369a1;
+      --status-active-bg: #ccfbf1;
+      --status-active-text: #0f766e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
-      background: #f8fafc;
-      padding: 20px;
-    }
-    .container {
-      max-width: 1400px;
-      margin: 0 auto;
-    }
-    .header {
-      background: #1e293b;
-      color: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-    .header p {
-      color: #94a3b8;
-      font-size: 14px;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-    .stat-card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .stat-label {
-      font-size: 12px;
-      color: #64748b;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    .stat-value {
-      font-size: 28px;
-      font-weight: 700;
-      color: #0f172a;
-      margin-top: 5px;
-    }
-    .filters {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-bottom: 20px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .filter-row {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 15px;
-      margin-bottom: 15px;
-    }
-    .filter-group label {
-      display: block;
-      font-size: 11px;
-      font-weight: 700;
-      color: #64748b;
-      margin-bottom: 5px;
-      text-transform: uppercase;
-    }
-    .filter-select, .filter-input {
-      width: 100%;
-      padding: 8px;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      font-size: 14px;
-    }
-    .table-container {
-      background: white;
-      border-radius: 10px;
+      display: flex;
+      height: 100vh;
+      background-color: var(--bg-color);
       overflow: hidden;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
     }
-    table {
-      width: 100%;
-      border-collapse: collapse;
+
+    /* LAYOUT */
+    .sidebar {
+      width: var(--sidebar-width);
+      background: #1e293b;
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      flex-shrink: 0;
     }
-    th {
-      background: #f8fafc;
-      padding: 12px;
-      text-align: left;
-      font-size: 12px;
+
+    .sidebar-header {
+      padding: 16px;
+      font-size: 16px;
       font-weight: 700;
-      color: #64748b;
-      border-bottom: 2px solid #e2e8f0;
+      border-bottom: 1px solid #334155;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 14px 10px;
+    }
+
+    .nav-item {
+      padding: 10px 12px;
+      color: #94a3b8;
+      border-radius: 6px;
       cursor: pointer;
-    }
-    th:hover {
-      background: #f1f5f9;
-    }
-    td {
-      padding: 12px;
-      border-bottom: 1px solid #e2e8f0;
+      transition: 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 4px;
       font-size: 13px;
     }
-    tr:hover {
-      background: #f8fafc;
+
+    .nav-item:hover, .nav-item.active {
+      background: #334155;
+      color: #fff;
     }
-    .badge {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 4px;
+
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      background: #fff;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+      height: 60px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text-dark);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      transition: 0.2s;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .btn-outline {
+      background: #fff;
+      border: 1px solid var(--border);
+      color: var(--text-dark);
+      margin-right: 8px;
+    }
+
+    .dashboard-container {
+      padding: 16px;
+      overflow-y: auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* STATS */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+      flex-shrink: 0;
+    }
+
+    .stat-card {
+      background: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      cursor: default;
+    }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-top: 4px;
+    }
+
+    /* FILTERS */
+    .controls-section {
+      background: #fff;
+      padding: 14px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .tabs {
+      display: flex;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 12px;
+      gap: 4px;
+    }
+
+    .tab {
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 13px;
+      color: var(--text-light);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px;
+      transition: 0.2s;
+    }
+
+    .tab:hover {
+      color: var(--text-dark);
+    }
+
+    .tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .filters-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      min-width: 140px;
+      flex: 1;
+      max-width: 200px;
+    }
+
+    .filter-group.wide {
+      flex: 2;
+      min-width: 220px;
+      max-width: none;
+    }
+
+    .filter-label {
       font-size: 11px;
       font-weight: 700;
+      color: var(--text-light);
+      text-transform: uppercase;
     }
-    .badge-jee { background: #dbeafe; color: #1e40af; }
-    .badge-neet { background: #dcfce7; color: #166534; }
+
+    /* QUICK ACTIONS */
+    .quick-actions {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+
+    .quick-btn {
+      padding: 6px 12px;
+      background: #f1f5f9;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      color: var(--text-dark);
+    }
+
+    .quick-btn:hover {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* COLUMN TOGGLE */
+    .column-toggle {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .icon-btn {
+      padding: 6px 10px;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: 0.2s;
+      font-size: 14px;
+    }
+
+    .icon-btn:hover {
+      background: #f1f5f9;
+    }
+
+    .icon-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .column-dropdown {
+      position: absolute;
+      top: 100%;
+      right: 0;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 1000;
+      display: none;
+      min-width: 200px;
+      padding: 8px;
+      margin-top: 4px;
+    }
+
+    .column-dropdown.show {
+      display: block;
+      animation: slideDown 0.2s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-5px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .column-option {
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 13px;
+      gap: 8px;
+      border-radius: 4px;
+      transition: 0.15s;
+    }
+
+    .column-option:hover {
+      background: #f1f5f9;
+    }
+
+    .column-option input {
+      accent-color: var(--primary);
+      cursor: pointer;
+    }
+
+    /* MULTI-SELECT */
+    .ms-container {
+      position: relative;
+      width: 100%;
+    }
+
+    .ms-btn {
+      width: 100%;
+      text-align: left;
+      background: #fff;
+      border: 1px solid var(--border);
+      padding: 7px 8px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: var(--text-dark);
+      min-height: 32px;
+      transition: 0.2s;
+    }
+
+    .ms-btn:hover {
+      border-color: #cbd5e1;
+    }
+
+    .ms-btn:after {
+      content: "▼";
+      font-size: 9px;
+      color: #94a3b8;
+      margin-left: 8px;
+    }
+
+    .ms-dropdown {
+      position: absolute;
+      top: 105%;
+      left: 0;
+      right: 0;
+      min-width: 100%;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      box-shadow: 0 6px 16px rgba(0,0,0,0.15);
+      z-index: 500;
+      display: none;
+      max-height: 320px;
+      overflow-y: auto;
+      padding: 4px;
+    }
+
+    .ms-dropdown.show {
+      display: block;
+      animation: slideDown 0.2s ease;
+    }
+
+    .ms-option {
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      cursor: pointer;
+      font-size: 13px;
+      gap: 8px;
+      border-radius: 4px;
+      color: var(--text-dark);
+      transition: 0.15s;
+    }
+
+    .ms-option:hover {
+      background: #f1f5f9;
+    }
+
+    .ms-option input {
+      accent-color: var(--primary);
+      width: 15px;
+      height: 15px;
+      cursor: pointer;
+      margin: 0;
+    }
+
+    .ms-select-all {
+      border-bottom: 1px solid #f1f5f9;
+      font-weight: 600;
+      margin-bottom: 4px;
+      padding-bottom: 8px;
+    }
+
+    .filter-select {
+      padding: 7px 8px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+      font-size: 13px;
+      background: #fff;
+      width: 100%;
+      transition: 0.2s;
+    }
+
+    .filter-select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    .clear-btn {
+      color: #ef4444;
+      font-size: 12px;
+      font-weight: 600;
+      background: none;
+      border: none;
+      cursor: pointer;
+      text-decoration: underline;
+      margin-bottom: 4px;
+      align-self: flex-end;
+      transition: 0.2s;
+    }
+
+    .clear-btn:hover {
+      color: #dc2626;
+    }
+
+    .summary-line {
+      margin-bottom: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-light);
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      flex-shrink: 0;
+      align-items: center;
+    }
+
+    .summary-pill {
+      background: #fff;
+      padding: 3px 8px;
+      border-radius: 15px;
+      border: 1px solid var(--border);
+      transition: 0.2s;
+    }
+
+    .summary-pill:hover {
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* TABLE */
+    .table-container {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      overflow: hidden;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 200px;
+    }
+
+    .table-wrapper {
+      overflow-y: auto;
+      overflow-x: auto;
+      flex: 1;
+      position: relative;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    .data-table thead {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #f8fafc;
+    }
+
+    .data-table th {
+      background: #f8fafc;
+      color: var(--text-light);
+      font-weight: 700;
+      text-align: left;
+      padding: 10px 14px;
+      border-bottom: 2px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: 0.2s;
+    }
+
+    .data-table th:hover {
+      background: #f1f5f9;
+      color: var(--text-dark);
+    }
+
+    .data-table th.sorted-asc:after {
+      content: " ▲";
+      color: var(--primary);
+      font-size: 10px;
+    }
+
+    .data-table th.sorted-desc:after {
+      content: " ▼";
+      color: var(--primary);
+      font-size: 10px;
+    }
+
+    .data-table th.hidden-col {
+      display: none;
+    }
+
+    .data-table td {
+      padding: 8px 14px;
+      border-bottom: 1px solid var(--border);
+      color: var(--text-dark);
+      vertical-align: middle;
+      background: #fff;
+    }
+
+    .data-table td.hidden-col {
+      display: none;
+    }
+
+    .data-table tbody tr {
+      transition: 0.15s;
+    }
+
+    .data-table tbody tr:hover {
+      background: #f1f5f9;
+    }
+
+    .pagination-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 14px;
+      background: #fff;
+      border-top: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .page-info {
+      font-size: 13px;
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .page-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .page-btn {
+      padding: 5px 10px;
+      border: 1px solid var(--border);
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 600;
+      transition: 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .page-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    .rows-per-page {
+      padding: 4px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 12px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    /* ID CELLS */
+    .id-cell {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .id-text {
+      font-family: monospace;
+      font-size: 11px;
+      color: var(--text-light);
+      background: #f1f5f9;
+      padding: 2px 5px;
+      border-radius: 3px;
+      width: fit-content;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: 0.2s;
+    }
+
+    .id-text:hover {
+      border-color: #cbd5e1;
+      background: #e2e8f0;
+      color: var(--primary);
+    }
+
+    /* BADGES */
     .status-badge {
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: 12px;
       font-size: 11px;
       font-weight: 600;
+      white-space: nowrap;
     }
-    .status-active { background: #ccfbf1; color: #0f766e; }
-    .status-today { background: #dcfce7; color: #166534; }
-    .btn {
-      padding: 10px 20px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
+
+    .status-active {
+      background: var(--status-active-bg);
+      color: var(--status-active-text);
+    }
+
+    .status-today {
+      background: var(--status-today-bg);
+      color: var(--status-today-text);
+    }
+
+    .status-soon {
+      background: var(--status-soon-bg);
+      color: var(--status-soon-text);
+    }
+
+    .status-scheduled {
+      background: var(--status-sched-bg);
+      color: var(--status-sched-text);
+    }
+
+    .category-badge {
+      font-size: 10px;
       font-weight: 600;
+      color: #475569;
+      background: #e2e8f0;
+      padding: 2px 6px;
+      border-radius: 4px;
     }
-    .btn:hover {
-      background: #1d4ed8;
+
+    .badge {
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-jee {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+
+    .badge-neet {
+      background: #dcfce7;
+      color: #166534;
+    }
+
+    .badge-foun {
+      background: #fef9c3;
+      color: #854d0e;
+    }
+
+    .type-badge {
+      font-size: 10px;
+      font-weight: 800;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .type-regular {
+      background: #e0e7ff;
+      color: #3730a3;
+    }
+
+    .type-default {
+      background: #f3f4f6;
+      color: #4b5563;
+    }
+
+    /* LOADER */
+    .loader {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100%;
+      gap: 10px;
+      color: var(--text-light);
+      padding: 40px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 3px solid #e2e8f0;
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #1e293b;
+      color: #fff;
+      padding: 12px 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      z-index: 9999;
+      display: none;
+      animation: slideUp 0.3s ease;
+    }
+
+    .toast.show {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .toast.success {
+      background: #10b981;
+    }
+
+    .toast.error {
+      background: #ef4444;
+    }
+
+    @keyframes slideUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* CONTEXT MENU */
+    .context-menu {
+      position: fixed;
+      background: #fff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      z-index: 9999;
+      display: none;
+      min-width: 200px;
+      padding: 4px;
+    }
+
+    .context-menu.show {
+      display: block;
+      animation: fadeIn 0.15s ease;
+    }
+
+    .context-item {
+      padding: 8px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: 0.15s;
+    }
+
+    .context-item:hover {
+      background: #f1f5f9;
+    }
+
+    .context-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 4px 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 1200px) {
+      .stats-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        width: 70px;
+      }
+      .sidebar-header span:last-child {
+        display: none;
+      }
+      .nav-item span:last-child {
+        display: none;
+      }
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .filter-group {
+        min-width: 100%;
+        max-width: none;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="header">
-      <h1>🎓 Allen Ops Dashboard</h1>
-      <p>Public View - Course Details 2025-26</p>
+  <div id="toast" class="toast"></div>
+  
+  <div id="context-menu" class="context-menu">
+    <div class="context-item" onclick="copyRowData()">📋 Copy Row (Excel Format)</div>
+    <div class="context-item" onclick="copyAllIds()">🔖 Copy All IDs</div>
+    <div class="context-divider"></div>
+    <div class="context-item" onclick="exportSingleRow()">💾 Export This Row</div>
+  </div>
+
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <span>📊</span>
+      <span>Allen Ops</span>
+    </div>
+    <ul class="nav-links">
+      <li class="nav-item active">
+        <span>📈</span>
+        <span>Dashboard</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="top-bar">
+      <div class="page-title">
+        Course Details 2025-26 (Public View)
+        <div class="column-toggle">
+          <button class="icon-btn" id="column-btn" onclick="toggleColumns()" title="Show/Hide Columns">⚙️</button>
+          <div id="column-dropdown" class="column-dropdown"></div>
+        </div>
+      </div>
+      <div>
+        <button class="btn btn-outline" onclick="copyEntireTable()" title="Copy entire table for Excel">📋 Copy</button>
+        <button class="btn btn-outline" onclick="exportData()" title="Export to CSV">💾 CSV</button>
+        <button class="btn btn-primary" id="refresh-btn" onclick="loadData()" title="Refresh Data">🔄 Refresh</button>
+      </div>
     </div>
 
-    <div class="stats">
-      <div class="stat-card">
-        <div class="stat-label">Total Courses</div>
-        <div class="stat-value" id="stat-courses">0</div>
+    <div class="dashboard-container">
+      <!-- STATS CARDS -->
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-label">Total Courses</div>
+          <div class="stat-value" id="stat-courses">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Regular Batches</div>
+          <div class="stat-value" id="stat-total">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Starts Today</div>
+          <div class="stat-value" id="stat-today" style="color:#15803d">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Upcoming (7 Days)</div>
+          <div class="stat-value" id="stat-upcoming" style="color:#7e22ce">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Total Strength</div>
+          <div class="stat-value" id="stat-strength">0</div>
+        </div>
       </div>
-      <div class="stat-card">
-        <div class="stat-label">Regular Batches</div>
-        <div class="stat-value" id="stat-batches">0</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-label">Total Strength</div>
-        <div class="stat-value" id="stat-strength">0</div>
-      </div>
-    </div>
 
-    <div class="filters">
-      <div class="filter-row">
-        <div class="filter-group">
-          <label>Stream</label>
-          <select class="filter-select" id="filter-stream">
-            <option value="">All Streams</option>
-          </select>
+      <div class="controls-section">
+        <div class="tabs">
+          <div class="tab active" onclick="setTab('all', this)" title="Show all batches">All Batches</div>
+          <div class="tab" onclick="setTab('upcoming', this)" title="Show upcoming batches">Upcoming</div>
+          <div class="tab" onclick="setTab('today', this)" title="Show today's batches">Today</div>
+          <div class="tab" onclick="setTab('past', this)" title="Show past batches">Past</div>
         </div>
-        <div class="filter-group">
-          <label>Class</label>
-          <select class="filter-select" id="filter-class">
-            <option value="">All Classes</option>
-          </select>
+
+        <div class="quick-actions">
+          <button class="quick-btn" onclick="resetToDefault()" title="Reset everything to default" style="background:#fef3c7;border-color:#fbbf24;color:#92400e;font-weight:700">🔄 Reset</button>
+          <button class="quick-btn" onclick="sortByDate()" title="Sort by nearest date">📅 Sort by Date</button>
+          <button class="quick-btn" onclick="sortByStrength()" title="Sort by highest strength">👥 Sort by Strength</button>
+          <button class="quick-btn" onclick="groupByStream()" title="Group by stream">📚 Group by Stream</button>
         </div>
-        <div class="filter-group">
-          <label>Language</label>
-          <select class="filter-select" id="filter-language">
-            <option value="">All Languages</option>
-          </select>
-        </div>
-        <div class="filter-group">
-          <label>Search</label>
-          <input type="text" class="filter-input" id="search" placeholder="Search...">
+
+        <div class="filters-row">
+          <div class="filter-group">
+            <label class="filter-label">Stream</label>
+            <div id="ms-stream" class="ms-container"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Class</label>
+            <div id="ms-class" class="ms-container"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Language</label>
+            <div id="ms-language" class="ms-container"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Category</label>
+            <div id="ms-category" class="ms-container"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">Batch Type</label>
+            <div id="ms-batchtype" class="ms-container"></div>
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">From Date</label>
+            <input type="date" id="filter-date-start" class="filter-select" onchange="triggerFilter()" title="Start date filter">
+          </div>
+          <div class="filter-group">
+            <label class="filter-label">To Date</label>
+            <input type="date" id="filter-date-end" class="filter-select" onchange="triggerFilter()" title="End date filter">
+          </div>
+          <div class="filter-group wide">
+            <label class="filter-label">Search (Ctrl+F)</label>
+            <input type="text" id="search-box" class="filter-select" placeholder="Search by course, batch, or ID..." onkeyup="debouncedApplyFilters()" title="Search across all fields">
+          </div>
+          <button class="clear-btn" onclick="clearFilters()" title="Clear filters only">✕ Clear Filters</button>
         </div>
       </div>
-      <button class="btn" onclick="resetFilters()">Reset Filters</button>
-    </div>
 
-    <div class="table-container">
-      <table id="data-table">
-        <thead>
-          <tr>
-            <th onclick="sortTable('date')">Date</th>
-            <th onclick="sortTable('stream')">Stream</th>
-            <th onclick="sortTable('classVal')">Class</th>
-            <th onclick="sortTable('courseName')">Course</th>
-            <th onclick="sortTable('batch')">Batch</th>
-            <th onclick="sortTable('strength')">Strength</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody id="table-body">
-          <tr><td colspan="7" style="text-align:center; padding:40px;">Loading data...</td></tr>
-        </tbody>
-      </table>
+      <div class="summary-line" id="summary-line"></div>
+
+      <div class="table-container">
+        <div id="loader" class="loader">
+          <div class="spinner"></div>
+          <span>Loading data...</span>
+        </div>
+
+        <div class="table-wrapper hidden" id="table-wrapper">
+          <table class="data-table" id="main-table">
+            <thead>
+              <tr>
+                <th onclick="sortTable('date')" data-col="date">Start Date</th>
+                <th onclick="sortTable('stream')" data-col="stream">Stream</th>
+                <th onclick="sortTable('mode')" data-col="mode">Category</th>
+                <th onclick="sortTable('classVal')" data-col="class">Class</th>
+                <th onclick="sortTable('language')" data-col="language">Language</th>
+                <th onclick="sortTable('batchType')" data-col="type">Type</th>
+                <th onclick="sortTable('courseName')" data-col="course">Course</th>
+                <th onclick="sortTable('courseId')" data-col="courseId">Course ID</th>
+                <th onclick="sortTable('phase')" data-col="phase">Phase</th>
+                <th onclick="sortTable('phaseId')" data-col="phaseId">Phase ID</th>
+                <th onclick="sortTable('batch')" data-col="batch">Batch</th>
+                <th onclick="sortTable('batchId')" data-col="batchId">Batch ID</th>
+                <th onclick="sortTable('strength')" data-col="strength">Strength</th>
+                <th data-col="status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="table-body"></tbody>
+          </table>
+        </div>
+
+        <div id="no-data" class="loader hidden" style="height:100px">
+          <span>No batches found matching your filters</span>
+        </div>
+
+        <div class="pagination-bar hidden" id="pagination-bar">
+          <div class="page-info">
+            Rows: 
+            <select class="rows-per-page" id="rows-per-page" onchange="changeRowsPerPage()" title="Change rows per page">
+              <option value="30">30</option>
+              <option value="50">50</option>
+              <option value="100">100</option>
+              <option value="200">200</option>
+              <option value="-1">All</option>
+            </select>
+            <span id="page-count-info">0-0 of 0</span>
+          </div>
+          <div class="page-controls" id="page-controls"></div>
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    let allData = [];
+    let fullData = [];
     let filteredData = [];
+    let currentTab = 'all';
+    let sortConfig = { key: 'date', direction: 'asc' };
+    let currentPage = 1;
+    let rowsPerPage = 30;
 
-    // Load data from JSON file
-    fetch('data.json')
-      .then(response => response.json())
-      .then(data => {
-        allData = data;
-        initializeFilters();
-        applyFilters();
-      })
-      .catch(error => {
-        document.getElementById('table-body').innerHTML = 
-          '<tr><td colspan="7" style="text-align:center;color:red;padding:40px;">Error loading data: ' + error + '</td></tr>';
-      });
+    let selectedStreams = new Set();
+    let selectedClasses = new Set();
+    let selectedLangs = new Set();
+    let selectedCats = new Set();
+    let selectedTypes = new Set();
 
-    function initializeFilters() {
-      const streams = [...new Set(allData.map(d => d.stream))].sort();
-      const classes = [...new Set(allData.map(d => d.classVal))].sort();
-      const languages = [...new Set(allData.map(d => d.language))].sort();
+    let filterTimer = null;
+    let contextRow = null;
 
-      populateSelect('filter-stream', streams);
-      populateSelect('filter-class', classes);
-      populateSelect('filter-language', languages);
+    let columnVisibility = {
+      date: true,
+      stream: true,
+      mode: true,
+      class: true,
+      language: true,
+      type: true,
+      course: true,
+      courseId: true,
+      phase: true,
+      phaseId: true,
+      batch: true,
+      batchId: true,
+      strength: true,
+      status: true
+    };
 
-      document.getElementById('filter-stream').addEventListener('change', applyFilters);
-      document.getElementById('filter-class').addEventListener('change', applyFilters);
-      document.getElementById('filter-language').addEventListener('change', applyFilters);
-      document.getElementById('search').addEventListener('input', applyFilters);
+    function showToast(message, type = 'success') {
+      const toast = document.getElementById('toast');
+      toast.textContent = message;
+      toast.className = `toast ${type} show`;
+      setTimeout(() => toast.classList.remove('show'), 3000);
     }
 
-    function populateSelect(id, options) {
-      const select = document.getElementById(id);
-      options.forEach(opt => {
-        const option = document.createElement('option');
-        option.value = opt;
-        option.textContent = opt;
-        select.appendChild(option);
+    function debouncedApplyFilters() {
+      clearTimeout(filterTimer);
+      filterTimer = setTimeout(() => {
+        currentPage = 1;
+        applyFilters();
+      }, 300);
+    }
+
+    function triggerFilter() {
+      debouncedApplyFilters();
+    }
+
+    function resetToDefault() {
+      selectedStreams.clear();
+      selectedClasses.clear();
+      selectedLangs.clear();
+      selectedCats.clear();
+      selectedTypes.clear();
+      document.getElementById('search-box').value = '';
+      document.getElementById('filter-date-start').value = '';
+      document.getElementById('filter-date-end').value = '';
+      sortConfig = { key: 'date', direction: 'asc' };
+      currentPage = 1;
+      document.getElementById('rows-per-page').value = '30';
+      rowsPerPage = 30;
+      currentTab = 'all';
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.tab')[0].classList.add('active');
+      populateAllDropdowns();
+      applyFilters();
+      document.querySelector('.table-wrapper')?.scrollTo(0, 0);
+      showToast('Reset to default view', 'success');
+    }
+
+    function toggleColumns() {
+      const dropdown = document.getElementById('column-dropdown');
+      dropdown.classList.toggle('show');
+      if (dropdown.classList.contains('show')) {
+        renderColumnOptions();
+      }
+    }
+
+    function renderColumnOptions() {
+      const dropdown = document.getElementById('column-dropdown');
+      const columns = [
+        { key: 'date', label: 'Start Date' },
+        { key: 'stream', label: 'Stream' },
+        { key: 'mode', label: 'Category' },
+        { key: 'class', label: 'Class' },
+        { key: 'language', label: 'Language' },
+        { key: 'type', label: 'Type' },
+        { key: 'course', label: 'Course' },
+        { key: 'courseId', label: 'Course ID' },
+        { key: 'phase', label: 'Phase' },
+        { key: 'phaseId', label: 'Phase ID' },
+        { key: 'batch', label: 'Batch' },
+        { key: 'batchId', label: 'Batch ID' },
+        { key: 'strength', label: 'Strength' },
+        { key: 'status', label: 'Status' }
+      ];
+
+      dropdown.innerHTML = '';
+
+      const buttonRow = document.createElement('div');
+      buttonRow.style.cssText = 'border-bottom:1px solid #e2e8f0;padding-bottom:8px;margin-bottom:8px;display:flex;gap:6px';
+      
+      const selectAllBtn = document.createElement('button');
+      selectAllBtn.textContent = 'All';
+      selectAllBtn.style.cssText = 'flex:1;padding:6px;background:#10b981;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700';
+      selectAllBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleAllColumns(true);
+      };
+
+      const clearAllBtn = document.createElement('button');
+      clearAllBtn.textContent = 'None';
+      clearAllBtn.style.cssText = 'flex:1;padding:6px;background:#ef4444;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:11px;font-weight:700';
+      clearAllBtn.onclick = (e) => {
+        e.stopPropagation();
+        toggleAllColumns(false);
+      };
+
+      buttonRow.appendChild(selectAllBtn);
+      buttonRow.appendChild(clearAllBtn);
+      dropdown.appendChild(buttonRow);
+
+      columns.forEach(col => {
+        const option = document.createElement('label');
+        option.className = 'column-option';
+        
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = columnVisibility[col.key];
+        checkbox.onchange = () => {
+          columnVisibility[col.key] = checkbox.checked;
+          updateColumnVisibility();
+          saveColumnState();
+        };
+        
+        const label = document.createTextNode(col.label);
+        option.appendChild(checkbox);
+        option.appendChild(label);
+        dropdown.appendChild(option);
       });
+    }
+
+    function toggleAllColumns(show) {
+      Object.keys(columnVisibility).forEach(col => columnVisibility[col] = show);
+      updateColumnVisibility();
+      renderColumnOptions();
+      showToast(show ? 'All columns shown' : 'All columns hidden', 'success');
+    }
+
+    function updateColumnVisibility() {
+      document.querySelectorAll('th, td').forEach(cell => {
+        const col = cell.getAttribute('data-col');
+        if (col) {
+          if (columnVisibility[col]) {
+            cell.classList.remove('hidden-col');
+          } else {
+            cell.classList.add('hidden-col');
+          }
+        }
+      });
+    }
+
+    function saveColumnState() {
+      try {
+        localStorage.setItem('columnVisibility', JSON.stringify(columnVisibility));
+      } catch (e) {}
+    }
+
+    function loadColumnState() {
+      try {
+        const saved = localStorage.getItem('columnVisibility');
+        if (saved) columnVisibility = JSON.parse(saved);
+      } catch (e) {}
+    }
+
+    window.onload = function() {
+      try {
+        loadColumnState();
+        
+        document.addEventListener('click', (e) => {
+          if (!e.target.closest('.ms-container')) {
+            document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('show'));
+          }
+          if (!e.target.closest('.context-menu')) {
+            document.getElementById('context-menu').classList.remove('show');
+          }
+          if (!e.target.closest('#column-btn') && !e.target.closest('#column-dropdown')) {
+            document.getElementById('column-dropdown').classList.remove('show');
+          }
+        });
+
+        document.addEventListener('contextmenu', (e) => {
+          const row = e.target.closest('tbody tr');
+          if (row) {
+            e.preventDefault();
+            contextRow = row;
+            const menu = document.getElementById('context-menu');
+            menu.style.left = e.pageX + 'px';
+            menu.style.top = e.pageY + 'px';
+            menu.classList.add('show');
+          }
+        });
+
+        loadData();
+      } catch (err) {
+        console.error('Initialization error:', err);
+        showToast('Error initializing dashboard', 'error');
+      }
+    };
+
+    function loadData() {
+      const refreshBtn = document.getElementById('refresh-btn');
+      refreshBtn.disabled = true;
+      refreshBtn.textContent = 'Loading...';
+      
+      document.getElementById('loader').classList.remove('hidden');
+      document.getElementById('table-wrapper').classList.add('hidden');
+      document.getElementById('pagination-bar').classList.add('hidden');
+      
+      // Fetch data from JSON file
+      fetch('data.json')
+        .then(response => {
+          if (!response.ok) throw new Error('Failed to load data');
+          return response.json();
+        })
+        .then(data => {
+          processData(data);
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = '🔄 Refresh';
+        })
+        .catch(err => {
+          console.error('Load error:', err);
+          showToast(`Failed to load data: ${err.message}`, 'error');
+          refreshBtn.disabled = false;
+          refreshBtn.textContent = '🔄 Refresh';
+          document.getElementById('loader').classList.add('hidden');
+        });
+    }
+
+    function processData(data) {
+      if (data && data.error) {
+        showToast(data.error, 'error');
+        return;
+      }
+      
+      fullData = Array.isArray(data) ? data.filter(i => {
+        const s = `${i.courseName}${i.batch}${i.phase}`.toLowerCase();
+        return !s.includes('dummy');
+      }) : [];
+      
+      populateAllDropdowns();
+      applyFilters();
+      
+      document.getElementById('loader').classList.add('hidden');
+      document.getElementById('table-wrapper').classList.remove('hidden');
+      document.getElementById('pagination-bar').classList.remove('hidden');
+      
+      showToast(`Loaded ${fullData.length} batches`, 'success');
+    }
+
+    function sortByDate() {
+      sortConfig = { key: 'date', direction: 'asc' };
+      applyFilters();
+      showToast('Sorted by nearest date', 'success');
+    }
+
+    function sortByStrength() {
+      sortConfig = { key: 'strength', direction: 'desc' };
+      applyFilters();
+      showToast('Sorted by highest strength', 'success');
+    }
+
+    function groupByStream() {
+      sortConfig = { key: 'stream', direction: 'asc', secondary: 'date' };
+      applyFilters();
+      showToast('Grouped by stream', 'success');
+    }
+
+    function getVisibleColumns() {
+      const mapping = {
+        date: 'Date',
+        stream: 'Stream',
+        mode: 'Category',
+        class: 'Class',
+        language: 'Language',
+        type: 'Type',
+        course: 'Course',
+        courseId: 'Course ID',
+        phase: 'Phase',
+        phaseId: 'Phase ID',
+        batch: 'Batch',
+        batchId: 'Batch ID',
+        strength: 'Strength',
+        status: 'Status'
+      };
+      
+      const headers = [];
+      const keys = [];
+      
+      Object.keys(mapping).forEach(key => {
+        if (columnVisibility[key]) {
+          headers.push(mapping[key]);
+          keys.push(key);
+        }
+      });
+      
+      return [headers, keys];
+    }
+
+    function copyRowData() {
+      if (!contextRow) return;
+      
+      const cells = contextRow.querySelectorAll('td:not(.hidden-col)');
+      const cleanData = Array.from(cells).map(cell => {
+        let text = cell.innerText || cell.textContent;
+        text = text.replace(/\n/g, ' ').trim();
+        text = text.replace(/\t/g, ' ');
+        return text;
+      });
+      
+      const tsvData = cleanData.join('\t');
+      
+      navigator.clipboard.writeText(tsvData).then(() => {
+        showToast('Row copied! Paste in Excel!', 'success');
+      }).catch(() => {
+        showToast('Failed to copy', 'error');
+      });
+      
+      document.getElementById('context-menu').classList.remove('show');
+    }
+
+    function copyAllIds() {
+      if (!contextRow) return;
+      
+      const ids = Array.from(contextRow.querySelectorAll('.id-text')).map(e => e.innerText.trim());
+      
+      navigator.clipboard.writeText(ids.join('\n')).then(() => {
+        showToast('IDs copied', 'success');
+      }).catch(() => {
+        showToast('Failed to copy', 'error');
+      });
+      
+      document.getElementById('context-menu').classList.remove('show');
+    }
+
+    function exportSingleRow() {
+      if (!contextRow) return;
+      
+      const cells = contextRow.querySelectorAll('td:not(.hidden-col)');
+      const visibleHeaders = Array.from(document.querySelectorAll('th:not(.hidden-col)')).map(th => th.textContent.replace(/[▲▼]/g, '').trim());
+      
+      let csv = visibleHeaders.join(',') + '\n';
+      
+      const data = Array.from(cells).map(c => {
+        let text = c.innerText.replace(/\n/g, ' ').trim();
+        return `"${text.replace(/"/g, '""')}"`;
+      });
+      
+      csv += data.join(',');
+      
+      const l = document.createElement('a');
+      l.href = encodeURI(`data:text/csv;charset=utf-8,${csv}`);
+      l.download = 'SingleBatchExport.csv';
+      document.body.appendChild(l);
+      l.click();
+      document.body.removeChild(l);
+      
+      showToast('Single row exported', 'success');
+      document.getElementById('context-menu').classList.remove('show');
+    }
+
+    function copyEntireTable() {
+      const rows = document.querySelectorAll('#main-table tbody tr');
+      if (rows.length === 0) {
+        showToast('No data to copy', 'error');
+        return;
+      }
+      
+      const [headers] = getVisibleColumns();
+      let tsvData = headers.join('\t') + '\n';
+      
+      rows.forEach(row => {
+        const cells = Array.from(row.querySelectorAll('td:not(.hidden-col)')).map(cell => {
+          let text = cell.innerText || cell.textContent;
+          text = text.replace(/\n/g, ' ').trim();
+          text = text.replace(/\t/g, ' ');
+          return text;
+        });
+        tsvData += cells.join('\t') + '\n';
+      });
+      
+      navigator.clipboard.writeText(tsvData).then(() => {
+        showToast(`${rows.length} rows copied with ${headers.length} columns`, 'success');
+      }).catch(() => {
+        showToast('Failed to copy table', 'error');
+      });
+    }
+
+    function createMultiSelect(id, opts, set, lbl) {
+      const c = document.getElementById(id);
+      if (!c) return;
+      
+      c.innerHTML = '';
+      
+      const btn = document.createElement('div');
+      btn.className = 'ms-btn';
+      btn.onclick = (e) => {
+        e.stopPropagation();
+        document.querySelectorAll('.ms-dropdown').forEach(d => {
+          if (d !== dd) d.classList.remove('show');
+        });
+        dd.classList.toggle('show');
+      };
+      
+      const dd = document.createElement('div');
+      dd.className = 'ms-dropdown';
+      
+      const allOpt = document.createElement('label');
+      allOpt.className = 'ms-option ms-select-all';
+      const allChk = document.createElement('input');
+      allChk.type = 'checkbox';
+      allOpt.appendChild(allChk);
+      allOpt.appendChild(document.createTextNode('Select All'));
+      dd.appendChild(allOpt);
+      
+      const chks = [];
+      opts.forEach(o => {
+        const l = document.createElement('label');
+        l.className = 'ms-option';
+        const k = document.createElement('input');
+        k.type = 'checkbox';
+        k.value = o;
+        k.checked = set.has(o);
+        k.onchange = () => {
+          if (k.checked) set.add(o);
+          else set.delete(o);
+          update();
+          triggerFilter();
+        };
+        l.appendChild(k);
+        l.appendChild(document.createTextNode(o));
+        dd.appendChild(l);
+        chks.push(k);
+      });
+      
+      allChk.onchange = () => {
+        if (allChk.checked) {
+          opts.forEach(o => set.add(o));
+        } else {
+          set.clear();
+        }
+        update();
+        triggerFilter();
+      };
+      
+      function update() {
+        const n = set.size;
+        const all = n === 0 || n === opts.length;
+        btn.innerHTML = all ? '<span>All</span>' : `<span style="color:var(--primary);font-weight:600">${n} Selected</span>`;
+        btn.style.borderColor = all ? 'var(--border)' : 'var(--primary)';
+        btn.style.backgroundColor = all ? '#fff' : '#eff6ff';
+        chks.forEach(k => k.checked = set.has(k.value));
+        allChk.checked = n === opts.length;
+      }
+      
+      update();
+      c.appendChild(btn);
+      c.appendChild(dd);
+    }
+
+    function populateAllDropdowns() {
+      try {
+        const getU = k => Array.from(new Set(fullData.map(i => i[k]))).filter(Boolean).sort();
+        const rawC = Array.from(new Set(fullData.map(i => i.classVal))).filter(Boolean);
+        const cls = rawC.sort((a, b) => parseInt(a.toString().replace(/\D/g, '') || 0) - parseInt(b.toString().replace(/\D/g, '') || 0));
+        
+        createMultiSelect('ms-stream', getU('stream'), selectedStreams, 'Stream');
+        createMultiSelect('ms-class', cls, selectedClasses, 'Class');
+        createMultiSelect('ms-language', getU('language'), selectedLangs, 'Language');
+        createMultiSelect('ms-category', getU('mode'), selectedCats, 'Category');
+        createMultiSelect('ms-batchtype', getU('batchType'), selectedTypes, 'Type');
+      } catch (err) {
+        console.error('Dropdown error:', err);
+        showToast('Error populating filters', 'error');
+      }
+    }
+
+    function setTab(n, e) {
+      document.getElementById('filter-date-start').value = '';
+      document.getElementById('filter-date-end').value = '';
+      currentTab = n;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      e.classList.add('active');
+      currentPage = 1;
+      applyFilters();
     }
 
     function applyFilters() {
-      const streamFilter = document.getElementById('filter-stream').value;
-      const classFilter = document.getElementById('filter-class').value;
-      const langFilter = document.getElementById('filter-language').value;
-      const searchText = document.getElementById('search').value.toLowerCase();
+      try {
+        const q = document.getElementById('search-box').value.toLowerCase();
+        const ds = document.getElementById('filter-date-start').value;
+        const de = document.getElementById('filter-date-end').value;
+        const d1 = ds ? parseInp(ds) : null;
+        const d2 = de ? parseInp(de) : null;
+        
+        filteredData = fullData.filter(i => {
+          if (selectedStreams.size > 0 && !selectedStreams.has(i.stream)) return false;
+          if (selectedClasses.size > 0 && !selectedClasses.has(i.classVal.toString())) return false;
+          if (selectedLangs.size > 0 && !selectedLangs.has(i.language)) return false;
+          if (selectedCats.size > 0 && !selectedCats.has(i.mode)) return false;
+          if (selectedTypes.size > 0 && !selectedTypes.has(i.batchType)) return false;
+          
+          if (q && !`${i.batch}${i.courseName}${i.phase}${i.batchId}${i.courseId}${i.language}`.toLowerCase().includes(q)) return false;
+          
+          const d = parseD(i.date);
+          if (!d) return currentTab === 'all' && !d1 && !d2;
+          
+          if (currentTab === 'today') {
+            if (!isToday(d)) return false;
+          }
+          if (currentTab === 'upcoming') {
+            if (!isUpcoming(d)) return false;
+          }
+          if (currentTab === 'past') {
+            if (!isPast(d)) return false;
+          }
+          
+          if (d1 && d < d1) return false;
+          if (d2 && d > d2) return false;
+          
+          return true;
+        });
+        
+        if (sortConfig.key) doSort(filteredData);
+        updateStats(filteredData);
+        renderTable();
+      } catch (err) {
+        console.error('Filter error:', err);
+        showToast('Error applying filters', 'error');
+      }
+    }
 
-      filteredData = allData.filter(item => {
-        if (streamFilter && item.stream !== streamFilter) return false;
-        if (classFilter && item.classVal !== classFilter) return false;
-        if (langFilter && item.language !== langFilter) return false;
-        if (searchText) {
-          const searchStr = (item.courseName + item.batch + item.batchId).toLowerCase();
-          if (!searchStr.includes(searchText)) return false;
-        }
-        return true;
-      });
+    function updateStats(d) {
+      try {
+        let tr = 0, str = 0, crs = new Set(), streamC = {};
+        let todayCourseIdSet = new Set();
+        let upcomingCourseIdSet = new Set();
+        
+        d.forEach(i => {
+          if (i.batchType === 'Regular') tr++;
+          str += parseInt(i.strength) || 0;
+          if (i.courseName) crs.add(i.courseName);
+          
+          const dt = parseD(i.date);
+          if (dt && i.courseId) {
+            if (isToday(dt)) todayCourseIdSet.add(i.courseId);
+            if (isUpcoming(dt)) upcomingCourseIdSet.add(i.courseId);
+          }
+          
+          streamC[i.stream || 'Other'] = (streamC[i.stream || 'Other'] || 0) + 1;
+        });
+        
+        document.getElementById('stat-total').innerText = tr;
+        document.getElementById('stat-courses').innerText = crs.size;
+        document.getElementById('stat-today').innerText = todayCourseIdSet.size;
+        document.getElementById('stat-upcoming').innerText = upcomingCourseIdSet.size;
+        document.getElementById('stat-strength').innerText = str.toLocaleString();
+        
+        const streamPills = Object.keys(streamC).sort().map(k => `<span class="summary-pill">${esc(k)}: <b>${streamC[k]}</b></span>`).join('');
+        document.getElementById('summary-line').innerHTML = streamPills + ` <span style="margin-left:auto;color:var(--text-light);font-size:12px">Showing <b style="color:var(--primary)">${d.length}</b> of <b>${fullData.length}</b> | Sorted by <b>${sortConfig.key}</b></span>`;
+      } catch (err) {
+        console.error('Stats error:', err);
+      }
+    }
 
-      updateStats();
+    function clearFilters() {
+      selectedStreams.clear();
+      selectedClasses.clear();
+      selectedLangs.clear();
+      selectedCats.clear();
+      selectedTypes.clear();
+      document.getElementById('search-box').value = '';
+      document.getElementById('filter-date-start').value = '';
+      document.getElementById('filter-date-end').value = '';
+      populateAllDropdowns();
+      applyFilters();
+      showToast('Filters cleared', 'success');
+    }
+
+    function changeRowsPerPage() {
+      const val = document.getElementById('rows-per-page').value;
+      rowsPerPage = val == -1 ? filteredData.length : parseInt(val);
+      currentPage = 1;
       renderTable();
     }
 
-    function updateStats() {
-      const courses = new Set(filteredData.map(d => d.courseName)).size;
-      const batches = filteredData.filter(d => d.batchType === 'Regular').length;
-      const strength = filteredData.reduce((sum, d) => sum + parseInt(d.strength || 0), 0);
-
-      document.getElementById('stat-courses').textContent = courses;
-      document.getElementById('stat-batches').textContent = batches;
-      document.getElementById('stat-strength').textContent = strength.toLocaleString();
+    function goToPage(p) {
+      currentPage = p;
+      renderTable();
+      document.querySelector('.table-wrapper').scrollTop = 0;
     }
 
     function renderTable() {
-      const tbody = document.getElementById('table-body');
-      
-      if (filteredData.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;">No data found</td></tr>';
-        return;
-      }
-
-      tbody.innerHTML = filteredData.map(row => {
-        const badgeClass = row.stream.toLowerCase().includes('jee') ? 'badge-jee' : 'badge-neet';
-        const statusBadge = isToday(row.date) ? 
-          '<span class="status-badge status-today">Today</span>' : 
-          '<span class="status-badge status-active">Active</span>';
-
-        return `
-          <tr>
-            <td><strong>${row.date}</strong></td>
-            <td><span class="badge ${badgeClass}">${row.stream}</span></td>
-            <td>${row.classVal}</td>
-            <td><strong>${row.courseName}</strong></td>
-            <td>${row.batch}</td>
-            <td><strong style="color:#2563eb;">${row.strength}</strong></td>
-            <td>${statusBadge}</td>
-          </tr>
-        `;
-      }).join('');
-    }
-
-    function isToday(dateStr) {
-      if (!dateStr) return false;
-      const parts = dateStr.split('-');
-      const date = new Date(parts[2], parts[1] - 1, parts[0]);
-      const today = new Date();
-      return date.toDateString() === today.toDateString();
-    }
-
-    function sortTable(key) {
-      filteredData.sort((a, b) => {
-        if (key === 'strength') {
-          return parseInt(b[key] || 0) - parseInt(a[key] || 0);
+      try {
+        const tot = filteredData.length;
+        
+        if (tot === 0) {
+          document.getElementById('no-data').classList.remove('hidden');
+          document.getElementById('main-table').classList.add('hidden');
+          return;
         }
-        return String(a[key]).localeCompare(String(b[key]));
-      });
-      renderTable();
+        
+        document.getElementById('no-data').classList.add('hidden');
+        document.getElementById('main-table').classList.remove('hidden');
+        
+        document.querySelectorAll('th').forEach(th => {
+          th.classList.remove('sorted-asc', 'sorted-desc');
+          const col = th.getAttribute('onclick')?.match(/\('(\w+)'\)/)?.[1];
+          if (col === sortConfig.key) {
+            th.classList.add(sortConfig.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+          }
+        });
+        
+        const start = (currentPage - 1) * rowsPerPage;
+        const end = Math.min(start + rowsPerPage, tot);
+        const pg = filteredData.slice(start, end);
+        
+        let h = '';
+        pg.forEach(r => {
+          h += '<tr>';
+          h += `<td data-col="date" style="font-weight:700">${esc(r.date)}</td>`;
+          
+          let bc = 'badge-foun';
+          const s = r.stream.toLowerCase();
+          if (s.includes('jee')) bc = 'badge-jee';
+          if (s.includes('neet')) bc = 'badge-neet';
+          
+          h += `<td data-col="stream"><span class="badge ${bc}">${esc(r.stream)}</span></td>`;
+          h += `<td data-col="mode"><span class="category-badge">${esc(r.mode)}</span></td>`;
+          h += `<td data-col="class">${esc(r.classVal)}</td>`;
+          h += `<td data-col="language">${esc(r.language)}</td>`;
+          h += `<td data-col="type"><span class="type-badge ${r.batchType === 'Regular' ? 'type-regular' : 'type-default'}">${esc(r.batchType)}</span></td>`;
+          h += `<td data-col="course"><div style="font-size:13px;max-width:220px;line-height:1.2;font-weight:600;color:#1e293b">${esc(r.courseName)}</div></td>`;
+          h += `<td data-col="courseId"><span class="id-text" onclick="cpjs('${jss(r.courseId)}',event)" title="Click to copy">${esc(r.courseId)}</span></td>`;
+          h += `<td data-col="phase"><div style="font-size:13px">${esc(r.phase)}</div></td>`;
+          h += `<td data-col="phaseId"><span class="id-text" onclick="cpjs('${jss(r.phaseId)}',event)" title="Click to copy">${esc(r.phaseId)}</span></td>`;
+          h += `<td data-col="batch"><div style="font-weight:700;color:#0f172a;max-width:180px">${esc(r.batch)}</div></td>`;
+          h += `<td data-col="batchId"><span class="id-text" onclick="cpjs('${jss(r.batchId)}',event)" title="Click to copy">${esc(r.batchId)}</span></td>`;
+          h += `<td data-col="strength" style="font-weight:700;color:#2563eb">${esc(r.strength)}</td>`;
+          
+          const d = parseD(r.date);
+          let stat = '<span class="status-badge status-active">Active</span>';
+          if (d) {
+            if (isToday(d)) {
+              stat = '<span class="status-badge status-today">Today</span>';
+            } else if (isUpcoming(d)) {
+              const days = Math.ceil((d - new Date().setHours(0, 0, 0, 0)) / 86400000);
+              stat = `<span class="status-badge status-soon">In ${days} ${days === 1 ? 'Day' : 'Days'}</span>`;
+            } else if (d < new Date()) {
+              stat = '<span class="status-badge status-scheduled">Scheduled</span>';
+            }
+          }
+          
+          h += `<td data-col="status">${stat}</td>`;
+          h += '</tr>';
+        });
+        
+        document.getElementById('table-body').innerHTML = h;
+        updateColumnVisibility();
+        
+        document.getElementById('page-count-info').innerText = `${start + 1}-${end} of ${tot}`;
+        renderPag(tot);
+      } catch (err) {
+        console.error('Render error:', err);
+        showToast('Error rendering table', 'error');
+      }
     }
 
-    function resetFilters() {
-      document.getElementById('filter-stream').value = '';
-      document.getElementById('filter-class').value = '';
-      document.getElementById('filter-language').value = '';
-      document.getElementById('search').value = '';
+    function renderPag(tot) {
+      const tp = Math.ceil(tot / rowsPerPage);
+      const c = document.getElementById('page-controls');
+      c.innerHTML = '';
+      
+      if (tp <= 1) return;
+      
+      const btn = (t, d, ck) => {
+        const b = document.createElement('button');
+        b.className = 'page-btn';
+        b.innerText = t;
+        if (d) b.disabled = true;
+        if (ck) b.onclick = ck;
+        return b;
+      };
+      
+      c.appendChild(btn('◀', currentPage === 1, () => goToPage(currentPage - 1)));
+      
+      let pgs = [];
+      if (tp <= 5) {
+        for (let i = 1; i <= tp; i++) pgs.push(i);
+      } else if (currentPage <= 3) {
+        pgs = [1, 2, 3, 4, '...', tp];
+      } else if (currentPage >= tp - 2) {
+        pgs = [1, '...', tp - 3, tp - 2, tp - 1, tp];
+      } else {
+        pgs = [1, '...', currentPage - 1, currentPage, currentPage + 1, '...', tp];
+      }
+      
+      pgs.forEach(p => {
+        if (p === '...') {
+          const b = btn('...', true);
+          b.style.border = 'none';
+          c.appendChild(b);
+        } else {
+          const b = btn(p, false, () => goToPage(p));
+          if (p === currentPage) b.classList.add('active');
+          c.appendChild(b);
+        }
+      });
+      
+      c.appendChild(btn('▶', currentPage >= tp, () => goToPage(currentPage + 1)));
+    }
+
+    function cpjs(t, e) {
+      e.stopPropagation();
+      navigator.clipboard.writeText(t).then(() => {
+        showToast(`Copied: ${t.substring(0, 20)}`, 'success');
+      }).catch(() => {
+        showToast('Failed to copy', 'error');
+      });
+    }
+
+    function sortTable(k) {
+      if (sortConfig.key === k) {
+        sortConfig.direction = sortConfig.direction === 'asc' ? 'desc' : 'asc';
+      } else {
+        sortConfig = { key: k, direction: 'asc' };
+      }
       applyFilters();
     }
+
+    function doSort(d) {
+      const k = sortConfig.key;
+      const m = sortConfig.direction === 'asc' ? 1 : -1;
+      
+      d.sort((a, b) => {
+        if (k === 'date') {
+          return ((parseD(a[k]) || new Date(9999, 0, 1)) - (parseD(b[k]) || new Date(9999, 0, 1))) * m;
+        }
+        if (k === 'strength') {
+          return (parseInt(a[k]) || 0 - parseInt(b[k]) || 0) * m;
+        }
+        
+        const x = (a[k] || '').toString().toLowerCase();
+        const y = (b[k] || '').toString().toLowerCase();
+        const result = x < y ? -1 : x > y ? 1 : 0;
+        
+        if (result === 0 && sortConfig.secondary === 'date') {
+          return ((parseD(a.date) || new Date(9999, 0, 1)) - (parseD(b.date) || new Date(9999, 0, 1))) * m;
+        }
+        
+        return result * m;
+      });
+    }
+
+    function parseD(s) {
+      if (!s) return null;
+      const p = s.split('-');
+      return new Date(p[2], p[1] - 1, p[0]);
+    }
+
+    function parseInp(s) {
+      if (!s) return null;
+      const p = s.split('-');
+      return new Date(p[0], p[1] - 1, p[2]);
+    }
+
+    function isToday(d) {
+      const t = new Date();
+      return d.getDate() === t.getDate() && d.getMonth() === t.getMonth() && d.getFullYear() === t.getFullYear();
+    }
+
+    function isUpcoming(d) {
+      const t = new Date();
+      t.setHours(0, 0, 0, 0);
+      const df = Math.ceil((d - t) / 86400000);
+      return df > 0 && df <= 7;
+    }
+
+    function isPast(d) {
+      const t = new Date();
+      t.setHours(0, 0, 0, 0);
+      return d < t;
+    }
+
+    function exportData() {
+      try {
+        if (filteredData.length === 0) {
+          showToast('No data to export', 'error');
+          return;
+        }
+        
+        const [headers, keys] = getVisibleColumns();
+        let csv = headers.join(',') + '\n';
+        
+        filteredData.forEach(r => {
+          const rowData = keys.map(key => {
+            let value = '';
+            switch (key) {
+              case 'date': value = r.date; break;
+              case 'stream': value = r.stream; break;
+              case 'mode': value = r.mode; break;
+              case 'class': value = r.classVal; break;
+              case 'language': value = r.language; break;
+              case 'type': value = r.batchType; break;
+              case 'course': value = r.courseName; break;
+              case 'courseId': value = r.courseId; break;
+              case 'phase': value = r.phase; break;
+              case 'phaseId': value = r.phaseId; break;
+              case 'batch': value = r.batch; break;
+              case 'batchId': value = r.batchId; break;
+              case 'strength': value = r.strength || 0; break;
+              case 'status':
+                const d = parseD(r.date);
+                if (d) {
+                  if (isToday(d)) value = 'Today';
+                  else if (isUpcoming(d)) value = 'Upcoming';
+                  else value = 'Active';
+                }
+                break;
+              default: value = '';
+            }
+            
+            value = value.toString().replace(/"/g, '""');
+            if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+              value = `"${value}"`;
+            }
+            return value;
+          });
+          
+          csv += rowData.join(',') + '\n';
+        });
+        
+        const l = document.createElement('a');
+        const timestamp = new Date().toISOString().split('T')[0];
+        l.href = encodeURI(`data:text/csv;charset=utf-8,${csv}`);
+        l.download = `CourseDetails-${timestamp}.csv`;
+        document.body.appendChild(l);
+        l.click();
+        document.body.removeChild(l);
+        
+        showToast(`Exported ${filteredData.length} rows with ${headers.length} columns`, 'success');
+      } catch (err) {
+        console.error('Export error:', err);
+        showToast('Failed to export data', 'error');
+      }
+    }
+
+    function esc(s) {
+      return (s ?? '').toString().replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+    }
+
+    function jss(s) {
+      return (s ?? '').toString().replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        document.getElementById('search-box').focus();
+        document.getElementById('search-box').select();
+      }
+      if ((e.ctrlKey || e.metaKey) && e.key === 'r') {
+        e.preventDefault();
+        loadData();
+      }
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.ms-dropdown').forEach(dd => dd.classList.remove('show'));
+        document.getElementById('context-menu').classList.remove('show');
+        document.getElementById('column-dropdown').classList.remove('show');
+      }
+    });
   </script>
 </body>
 </html>
