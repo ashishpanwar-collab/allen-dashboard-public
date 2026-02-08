@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <base target="_top">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>🔐 Admin Panel - Allen Ops</title>
+  <style>
+    /* Password Screen */
+    .password-screen {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .password-box {
+      background: white;
+      padding: 50px;
+      border-radius: 20px;
+      box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+      text-align: center;
+      max-width: 420px;
+      width: 90%;
+      animation: slideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-40px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .lock-icon {
+      font-size: 70px;
+      margin-bottom: 20px;
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    
+    .password-box h1 {
+      color: #1e293b;
+      margin-bottom: 8px;
+      font-size: 32px;
+      font-weight: 900;
+    }
+    
+    .password-box .subtitle {
+      color: #64748b;
+      margin-bottom: 35px;
+      font-size: 15px;
+    }
+    
+    .input-group {
+      position: relative;
+      margin-bottom: 25px;
+    }
+    
+    .pwd-input {
+      width: 100%;
+      padding: 18px 55px 18px 20px;
+      border: 2px solid #e2e8f0;
+      border-radius: 12px;
+      font-size: 16px;
+      box-sizing: border-box;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 1px;
+    }
+    
+    .pwd-input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 5px rgba(37, 99, 235, 0.08);
+    }
+    
+    .toggle-eye {
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 22px;
+      color: #94a3b8;
+      user-select: none;
+      transition: 0.2s;
+    }
+    
+    .toggle-eye:hover { color: #2563eb; }
+    
+    .login-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
+      color: white;
+      border: none;
+      border-radius: 12px;
+      font-size: 17px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.3s;
+      font-family: 'Inter', sans-serif;
+      box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);
+    }
+    
+    .login-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 15px 35px rgba(37, 99, 235, 0.4);
+    }
+    
+    .login-btn:active {
+      transform: translateY(-1px);
+    }
+    
+    .error-msg {
+      color: #ef4444;
+      margin-top: 18px;
+      font-size: 14px;
+      font-weight: 700;
+      display: none;
+      padding: 12px;
+      background: #fee;
+      border-radius: 8px;
+      animation: shake 0.5s;
+    }
+    
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-12px); }
+      40%, 80% { transform: translateX(12px); }
+    }
+    
+    /* Admin Panel Styles */
+    body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; padding: 0; }
+    
+    .admin-panel { display: none; }
+    
+    .top-bar {
+      background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+      color: white;
+      padding: 18px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      flex-wrap: wrap;
+      gap: 15px;
+    }
+    
+    .top-title {
+      font-weight: 900;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    
+    .btn {
+      padding: 11px 20px;
+      border-radius: 10px;
+      border: none;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    
+    .btn:hover { transform: translateY(-2px); }
+    
+    .btn-outline {
+      background: rgba(255,255,255,0.15);
+      color: white;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .btn-outline:hover {
+      background: rgba(255,255,255,0.25);
+    }
+    
+    .btn-danger {
+      background: #ef4444;
+      color: white;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+    }
+    
+    .btn-danger:hover {
+      background: #dc2626;
+      box-shadow: 0 6px 18px rgba(239, 68, 68, 0.4);
+    }
+    
+    .container {
+      max-width: 1400px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    
+    .notice-card {
+      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+      border: 2px solid #f59e0b;
+      border-radius: 16px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.2);
+    }
+    
+    .notice-card h2 {
+      color: #92400e;
+      margin-bottom: 12px;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .notice-card p {
+      color: #78350f;
+      line-height: 1.6;
+      margin: 8px 0;
+    }
+    
+    .notice-card ul {
+      margin: 15px 0;
+      padding-left: 25px;
+      color: #78350f;
+    }
+    
+    .notice-card li {
+      margin: 8px 0;
+      line-height: 1.5;
+    }
+    
+    .info-card {
+      background: white;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    }
+    
+    .info-card h3 {
+      color: #0f172a;
+      margin-bottom: 15px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+    
+    .info-card p {
+      color: #64748b;
+      line-height: 1.7;
+      margin: 10px 0;
+    }
+    
+    .status-badge {
+      display: inline-block;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+      margin: 8px 8px 8px 0;
+    }
+    
+    .badge-success {
+      background: #dcfce7;
+      color: #166534;
+    }
+    
+    .badge-danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    
+    .badge-warning {
+      background: #fef3c7;
+      color: #92400e;
+    }
+    
+    @media (max-width: 768px) {
+      .top-bar { flex-direction: column; align-items: stretch; }
+      .btn-group { width: 100%; }
+      .btn { width: 100%; }
+      .password-box { padding: 35px 25px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- PASSWORD SCREEN -->
+<div id="password-screen" class="password-screen">
+  <div class="password-box">
+    <div class="lock-icon">🔐</div>
+    <h1>Admin Access</h1>
+    <p class="subtitle">Allen Dashboard Control Panel</p>
+    
+    <div class="input-group">
+      <input 
+        type="password" 
+        id="pwd-input" 
+        class="pwd-input" 
+        placeholder="Enter your admin password"
+        autocomplete="off"
+        onkeypress="if(event.key==='Enter') tryLogin()"
+      >
+      <span class="toggle-eye" onclick="togglePwd()">👁️</span>
+    </div>
+    
+    <button class="login-btn" onclick="tryLogin()">
+      🚀 Access Dashboard
+    </button>
+    
+    <div id="error-msg" class="error-msg"></div>
+  </div>
+</div>
+
+<!-- ADMIN PANEL -->
+<div id="admin-panel" class="admin-panel">
+  <div class="top-bar">
+    <div class="top-title">
+      ⚡ Admin Panel - Allen Ops 2025-26
+    </div>
+    <div class="btn-group">
+      <button class="btn btn-outline" onclick="goPublic()">
+        ← Public Dashboard
+      </button>
+      <button class="btn btn-danger" onclick="doLogout()">
+        🚪 Logout
+      </button>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Important Notice -->
+    <div class="notice-card">
+      <h2>⚠️ Important Information</h2>
+      <p><strong>This is a static demo version</strong> hosted on GitHub Pages.</p>
+      
+      <p style="margin-top: 15px;"><strong>Current Status:</strong></p>
+      <ul>
+        <li><span class="status-badge badge-success">✓ Password Protection: Working</span></li>
+        <li><span class="status-badge badge-success">✓ Secure Access: Working</span></li>
+        <li><span class="status-badge badge-success">✓ Session Management: Working</span></li>
+        <li><span class="status-badge badge-danger">✗ Database Operations: Not Available</span></li>
+        <li><span class="status-badge badge-danger">✗ Real-time Tracking: Not Available</span></li>
+        <li><span class="status-badge badge-danger">✗ User Management: Not Available</span></li>
+      </ul>
+      
+      <p style="margin-top: 15px; font-weight: 600;">
+        💡 <strong>Note:</strong> To enable full admin functionality, you need to integrate with a backend service (Apps Script, Vercel Functions, or Firebase).
+      </p>
+    </div>
+
+    <!-- Admin Info -->
+    <div class="info-card">
+      <h3>🔒 Authentication Status</h3>
+      <p>
+        <span class="status-badge badge-success">✓ Authenticated</span>
+        <span class="status-badge badge-success">✓ Session Active</span>
+      </p>
+      <p style="margin-top: 15px;">
+        <strong>Session Started:</strong> <span id="session-time"></span><br>
+        <strong>Access Level:</strong> Full Admin<br>
+        <strong>Session Duration:</strong> 8 hours (auto-logout)
+      </p>
+    </div>
+
+    <div class="info-card" style="margin-top: 20px;">
+      <h3>📊 Available Features (Static Version)</h3>
+      <p><strong>You can access:</strong></p>
+      <ul style="color: #64748b; margin-top: 10px; line-height: 1.8;">
+        <li>✓ View public dashboard</li>
+        <li>✓ Secure admin access via password</li>
+        <li>✓ Session management (auto-logout after 8 hours)</li>
+        <li>✓ Logout functionality</li>
+      </ul>
+      
+      <p style="margin-top: 20px;"><strong>To enable full features, you need:</strong></p>
+      <ul style="color: #64748b; margin-top: 10px; line-height: 1.8;">
+        <li>→ Backend API (Apps Script / Vercel Functions)</li>
+        <li>→ Database connection (Google Sheets / Firestore)</li>
+        <li>→ Real-time data sync</li>
+      </ul>
+    </div>
+
+    <div class="info-card" style="margin-top: 20px;">
+      <h3>🎯 Quick Actions</h3>
+      <div style="display: flex; gap: 10px; flex-wrap: wrap; margin-top: 15px;">
+        <button class="btn btn-outline" onclick="goPublic()" style="background: #2563eb; color: white;">
+          📊 View Public Dashboard
+        </button>
+        <button class="btn btn-outline" onclick="viewLogs()" style="background: #10b981; color: white;">
+          📋 View Access Logs
+        </button>
+        <button class="btn btn-outline" onclick="clearLogs()" style="background: #f59e0b; color: white;">
+          🗑️ Clear Logs
+        </button>
+      </div>
+    </div>
+
+    <!-- Access Logs -->
+    <div class="info-card" style="margin-top: 20px;">
+      <h3>📜 Recent Access Logs</h3>
+      <div id="logs-container" style="margin-top: 15px; max-height: 300px; overflow-y: auto; font-family: monospace; font-size: 12px; color: #64748b; background: #f8fafc; padding: 15px; border-radius: 8px;">
+        Loading logs...
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ============= CONFIG =============
+  const ADMIN_PASSWORDS = [
+    "Allen@Admin2026!",
+    "SecureBackup@2026"
+  ];
+  
+  const SESSION_DURATION = 8 * 60 * 60 * 1000; // 8 hours
+  const MAX_ATTEMPTS = 5;
+  
+  let failedAttempts = 0;
+  let lockoutUntil = null;
+  
+  // ============= AUTH FUNCTIONS =============
+  
+  function tryLogin() {
+    const pwd = document.getElementById('pwd-input').value;
+    const errMsg = document.getElementById('error-msg');
+    
+    // Check lockout
+    if (lockoutUntil && Date.now() < lockoutUntil) {
+      const mins = Math.ceil((lockoutUntil - Date.now()) / 60000);
+      errMsg.textContent = `🔒 Locked! Try again in ${mins} minute${mins > 1 ? 's' : ''}.`;
+      errMsg.style.display = 'block';
+      return;
+    }
+    
+    // Reset lockout
+    if (lockoutUntil && Date.now() >= lockoutUntil) {
+      failedAttempts = 0;
+      lockoutUntil = null;
+    }
+    
+    // Check password
+    if (ADMIN_PASSWORDS.includes(pwd)) {
+      // Success
+      const auth = {
+        authenticated: true,
+        timestamp: Date.now(),
+        sessionId: Date.now().toString(36) + Math.random().toString(36).substr(2)
+      };
+      
+      sessionStorage.setItem('adminAuth', JSON.stringify(auth));
+      logAccess('LOGIN_SUCCESS', 'Admin authenticated');
+      
+      failedAttempts = 0;
+      showAdmin();
+      
+    } else {
+      // Failed
+      failedAttempts++;
+      
+      if (failedAttempts >= MAX_ATTEMPTS) {
+        lockoutUntil = Date.now() + (5 * 60 * 1000); // 5 min
+        errMsg.textContent = '🔒 Too many failed attempts! Locked for 5 minutes.';
+        logAccess('ACCOUNT_LOCKED', `After ${MAX_ATTEMPTS} failed attempts`);
+      } else {
+        errMsg.textContent = `❌ Wrong password! ${MAX_ATTEMPTS - failedAttempts} attempts left.`;
+      }
+      
+      errMsg.style.display = 'block';
+      errMsg.style.animation = 'none';
+      setTimeout(() => errMsg.style.animation = '', 10);
+      
+      document.getElementById('pwd-input').value = '';
+      document.getElementById('pwd-input').focus();
+      
+      logAccess('LOGIN_FAILED', 'Invalid password');
+    }
+  }
+  
+  function checkAuth() {
+    const authData = sessionStorage.getItem('adminAuth');
+    if (!authData) return false;
+    
+    try {
+      const auth = JSON.parse(authData);
+      if (Date.now() - auth.timestamp > SESSION_DURATION) {
+        sessionStorage.clear();
+        logAccess('SESSION_EXPIRED', 'Auto logout after 8 hours');
+        return false;
+      }
+      return auth.authenticated === true;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  function showAdmin() {
+    document.getElementById('password-screen').style.display = 'none';
+    document.getElementById('admin-panel').style.display = 'block';
+    
+    // Show session time
+    const authData = JSON.parse(sessionStorage.getItem('adminAuth'));
+    document.getElementById('session-time').textContent = new Date(authData.timestamp).toLocaleString();
+    
+    // Load logs
+    displayLogs();
+  }
+  
+  function showLogin() {
+    document.getElementById('password-screen').style.display = 'flex';
+    document.getElementById('admin-panel').style.display = 'none';
+    document.getElementById('pwd-input').focus();
+  }
+  
+  function doLogout() {
+    if (confirm('Logout from admin panel?')) {
+      logAccess('LOGOUT', 'Manual logout');
+      sessionStorage.clear();
+      location.reload();
+    }
+  }
+  
+  function togglePwd() {
+    const input = document.getElementById('pwd-input');
+    const icon = event.target;
+    
+    if (input.type === 'password') {
+      input.type = 'text';
+      icon.textContent = '🙈';
+    } else {
+      input.type = 'password';
+      icon.textContent = '👁️';
+    }
+  }
+  
+  function goPublic() {
+    window.open('index.html', '_blank');
+  }
+  
+  // ============= LOGGING =============
+  
+  function logAccess(type, details) {
+    try {
+      const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+      logs.unshift({
+        timestamp: new Date().toISOString(),
+        type: type,
+        details: details
+      });
+      
+      // Keep last 100 logs
+      if (logs.length > 100) logs.pop();
+      
+      localStorage.setItem('adminLogs', JSON.stringify(logs));
+    } catch (e) {
+      console.error('Error logging:', e);
+    }
+  }
+  
+  function displayLogs() {
+    try {
+      const logs = JSON.parse(localStorage.getItem('adminLogs') || '[]');
+      const container = document.getElementById('logs-container');
+      
+      if (logs.length === 0) {
+        container.innerHTML = '<div style="color:#94a3b8;">No logs yet</div>';
+        return;
+      }
+      
+      container.innerHTML = logs.slice(0, 50).map(log => {
+        const date = new Date(log.timestamp);
+        const timeStr = date.toLocaleString();
+        
+        let color = '#64748b';
+        if (log.type.includes('SUCCESS')) color = '#10b981';
+        if (log.type.includes('FAILED')) color = '#ef4444';
+        if (log.type.includes('LOCKED')) color = '#f59e0b';
+        
+        return `<div style="margin-bottom:8px;">
+          <span style="color:${color};font-weight:700;">[${log.type}]</span>
+          <span style="color:#94a3b8;"> ${timeStr}</span>
+          <span style="color:#475569;"> - ${log.details}</span>
+        </div>`;
+      }).join('');
+      
+    } catch (e) {
+      document.getElementById('logs-container').innerHTML = '<div style="color:#ef4444;">Error loading logs</div>';
+    }
+  }
+  
+  function viewLogs() {
+    displayLogs();
+    document.getElementById('logs-container').parentElement.scrollIntoView({ behavior: 'smooth' });
+  }
+  
+  function clearLogs() {
+    if (confirm('Clear all access logs?')) {
+      localStorage.removeItem('adminLogs');
+      displayLogs();
+      alert('✓ Logs cleared');
+    }
+  }
+  
+  // ============= PAGE LOAD =============
+  
+  window.onload = function() {
+    if (checkAuth()) {
+      showAdmin();
+      logAccess('AUTO_LOGIN', 'Session restored');
+    } else {
+      showLogin();
+      logAccess('PAGE_LOAD', 'Admin panel accessed');
+    }
+  };
+  
+</script>
+
+</body>
+</html>
